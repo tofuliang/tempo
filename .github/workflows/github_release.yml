@@ -1,12 +1,80 @@
 name: Github Release Workflow
 
 on:
+  workflow_dispatch:
   push:
     tags:
       - '[0-9]+.[0-9]+.[0-9]+'
 
 jobs:
+  build-lib-decoder-ffmpeg:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Android NDK
+        uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        with:
+          ndk-version: r27
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+      - name: Checkout androidx media
+        uses: actions/checkout@v3
+        with:
+          repository: 'androidx/media'
+          ref: '1.4.1'
+          path: 'media'
+      - name: build ffmpeg
+        env:
+          NDK_PATH: ${{ steps.setup-ndk.outputs.ndk-path }}
+        run: |
+          echo "NDK_PATH=$NDK_PATH"
+          FFMPEG_MODULE_PATH="$(pwd)/media/libraries/decoder_ffmpeg/src/main"
+          echo "FFMPEG_MODULE_PATH=$FFMPEG_MODULE_PATH"
+          echo "FFMPEG_MODULE_PATH=$FFMPEG_MODULE_PATH" >> $GITHUB_ENV
+          
+          HOST_PLATFORM="linux-x86_64"
+          echo "HOST_PLATFORM=$HOST_PLATFORM"
+          echo "HOST_PLATFORM=$HOST_PLATFORM" >> $GITHUB_ENV
+          
+          ANDROID_ABI=21
+          echo "ANDROID_ABI=$ANDROID_ABI"
+          echo "ANDROID_ABI=$ANDROID_ABI" >> $GITHUB_ENV
+          
+          git clone --branch release/6.0 --single-branch --depth 1 git://source.ffmpeg.org/ffmpeg && \
+          cd ffmpeg && \
+          git checkout release/6.0 && \
+          FFMPEG_PATH="$(pwd)" && cd -
+          echo "FFMPEG_PATH=$FFMPEG_PATH"
+          echo "FFMPEG_PATH=$FFMPEG_PATH" >> $GITHUB_ENV
+          
+          ENABLED_DECODERS=(alac)
+          echo "ENABLED_DECODERS=$ENABLED_DECODERS"
+          echo "ENABLED_DECODERS=$ENABLED_DECODERS" >> $GITHUB_ENV
+          
+          cd "${FFMPEG_MODULE_PATH}/jni" && \
+          ln -s "$FFMPEG_PATH" ffmpeg && cd -
+          
+          cd "${FFMPEG_MODULE_PATH}/jni" && \
+          sed -i '77,91s/^/#/; 105,132s/^/#/' ./build_ffmpeg.sh && \
+          ./build_ffmpeg.sh \
+          "${FFMPEG_MODULE_PATH}" "${NDK_PATH}" "${HOST_PLATFORM}" "${ANDROID_ABI}" "${ENABLED_DECODERS[@]}" && cd -
+          
+          cd media && \
+          sed -i '29i\        ndk {  abiFilters  "arm64-v8a" }' common_library_config.gradle && \
+          ./gradlew lib-decoder-ffmpeg:assembleRelease && cd -
+      - name: Upload lib-decoder-ffmpeg
+        uses: actions/upload-artifact@v4
+        with:
+          name: lib-decoder-ffmpeg
+          path: media/libraries/decoder_ffmpeg/buildout/outputs/aar/lib-decoder-ffmpeg-release.aar
+      - name: SSH 连接到 Actions
+        uses: P3TERX/ssh2actions@main
+        if: ${{ failure() }}
   build:
+    needs: build-lib-decoder-ffmpeg
     runs-on: ubuntu-latest
     steps:
       - name: Setup JDK 17
@@ -16,7 +84,10 @@ jobs:
           java-version: '17'
 
       - uses: actions/checkout@v3
-
+      - name: Download lib-decoder-ffmpeg
+        uses: actions/download-artifact@v4
+        with:
+          name: lib-decoder-ffmpeg
       - name: Cache Gradle and wrapper
         uses: actions/cache@v3
         with:
@@ -35,6 +106,15 @@ jobs:
           echo "BUILD_TOOL_VERSION=$BUILD_TOOL_VERSION" >> $GITHUB_ENV
           echo Last build tool version is: $BUILD_TOOL_VERSION
 
+      - name: enable lib-decoder-ffmpeg
+        run: |
+          mkdir -p app/libs
+          [ -f lib-decoder-ffmpeg-release.aar ] && mv lib-decoder-ffmpeg-release.aar app/libs
+          sed -i '99i\    implementation fileTree(dir: "libs", include: ["lib-*.aar"])' app/build.gradle
+          sed -i '56d;57d' app/src/main/java/com/cappielloantonio/tempo/util/DownloadUtil.java
+          sed -i '56i\        return true;' app/src/main/java/com/cappielloantonio/tempo/util/DownloadUtil.java
+          echo "ReleaseVersion=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
       - name: Build APK
         id: build
         run: bash ./gradlew assembleTempoRelease
@@ -52,7 +132,7 @@ jobs:
           BUILD_TOOLS_VERSION: ${{ env.BUILD_TOOL_VERSION }}
 
       - name: Make artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: app-release-signed
           path: ${{steps.sign_apk.outputs.signedReleaseFile}}
@@ -61,8 +141,8 @@ jobs:
         id: create_release
         uses: actions/create-release@v1
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release v${{ github.ref }}
+          tag_name: ${{ env.ReleaseVersion }}
+          release_name: Release ${{ env.ReleaseVersion }}
           body: '> Changelog coming soon'
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -76,3 +156,6 @@ jobs:
           asset_path: ${{steps.sign_apk.outputs.signedReleaseFile}}
           asset_name: app-tempo-release.apk
           asset_content_type: application/zip
+      - name: SSH 连接到 Actions
+        uses: P3TERX/ssh2actions@main
+        if: ${{ failure() }}
