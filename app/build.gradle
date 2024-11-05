@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-parcelize'
 
 android {
-    compileSdk = 34
+    compileSdk 34
     buildToolsVersion = '34.0.0'
 
     defaultConfig {
@@ -96,6 +96,7 @@ dependencies {
     implementation 'androidx.media3:media3-exoplayer-hls:1.4.1'
     tempoImplementation 'androidx.media3:media3-cast:1.4.1'
     playImplementation 'androidx.media3:media3-cast:1.4.1'
+    implementation fileTree(dir: "libs", include: ["lib-*.aar"])
 
     annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'
     annotationProcessor 'androidx.room:room-compiler:2.6.1'
