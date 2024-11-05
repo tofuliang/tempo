@@ -114,13 +114,18 @@ jobs:
 
       - name: Build APK
         id: build
-        run: bash ./gradlew assembleTempoRelease
+        run: |
+          bash ./gradlew assembleRelease
+          mkdir release
+          mv app/build/outputs/apk/tempo/release/app-tempo-release-unsigned.apk release/
+          mv app/build/outputs/apk/play/release/app-play-release-unsigned.apk release/
+          mv app/build/outputs/apk/notquitemy/release/app-notquitemy-release-unsigned.apk release/
 
       - name: Sign APK
         id: sign_apk
         uses: r0adkll/sign-android-release@v1
         with:
-          releaseDirectory: app/build/outputs/apk/tempo/release
+          releaseDirectory: release
           signingKeyBase64: ${{ secrets.KEYSTORE_BASE64 }}
           alias: ${{ secrets.KEY_ALIAS_GITHUB }}
           keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
@@ -132,27 +137,22 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: app-release-signed
-          path: ${{steps.sign_apk.outputs.signedReleaseFile}}
+          path: |
+            ${{ steps.sign_apk.signedReleaseFile0 }}
+            ${{ steps.sign_apk.signedReleaseFile1 }}
+            ${{ steps.sign_apk.signedReleaseFile2 }}
 
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
+      - uses: marvinpinto/action-automatic-releases@latest
         with:
-          tag_name: ${{ env.ReleaseVersion }}
-          release_name: Release ${{ env.ReleaseVersion }}
-          body: '> Changelog coming soon'
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
+          repo_token: ${{ github.token }}
+          prerelease: false
+          automatic_release_tag: ${{ env.ReleaseVersion }}
+          title: ${{ env.ReleaseVersion }}
+          files: |
+            ${{ steps.sign_apk.signedReleaseFile0 }}
+            ${{ steps.sign_apk.signedReleaseFile1 }}
+            ${{ steps.sign_apk.signedReleaseFile2 }}
 
-      - name: Upload APK
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{steps.sign_apk.outputs.signedReleaseFile}}
-          asset_name: app-tempo-release.apk
-          asset_content_type: application/zip
       - name: Debug
         uses: P3TERX/ssh2actions@main
         if: ${{ failure() }}
