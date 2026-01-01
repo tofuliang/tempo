@@ -362,6 +362,7 @@
             android:padding="16dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:visibility="gone"
+            android:contentDescription="@string/airplay_cast"
             app:layout_constraintStart_toEndOf="@+id/player_open_queue_button"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"

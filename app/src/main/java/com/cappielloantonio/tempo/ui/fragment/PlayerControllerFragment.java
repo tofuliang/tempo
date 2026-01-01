@@ -137,9 +137,7 @@ public class PlayerControllerFragment extends Fragment {
 
             // Observe AirPlay devices
             playerBottomSheetViewModel.getAirPlayDevices().observe(getViewLifecycleOwner(), devices -> {
-                if (airPlayCastButton != null) {
-                    airPlayCastButton.setVisibility(devices != null && !devices.isEmpty() ? View.VISIBLE : View.GONE);
-                }
+                airPlayCastButton.setVisibility(devices != null && !devices.isEmpty() ? View.VISIBLE : View.GONE);
             });
         }
     }

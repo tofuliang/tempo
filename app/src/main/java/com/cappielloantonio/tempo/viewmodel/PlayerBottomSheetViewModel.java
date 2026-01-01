@@ -248,13 +248,12 @@ public class PlayerBottomSheetViewModel extends AndroidViewModel {
         return airPlayDevices;
     }
 
-    public void setAirPlayDevices(List<AirPlayDevice> devices) {
+    public void setAirPlayDevices(@NonNull List<AirPlayDevice> devices) {
         airPlayDevices.postValue(devices);
     }
 
     public void showAirPlayDeviceList() {
-        // This method will be called when the user clicks the AirPlay button
-        // The actual device selection dialog will be implemented in a later task
-        // For now, this is a placeholder that can be extended
+        // TODO: Implement device selection dialog (Task 10)
+        android.util.Log.d("PlayerBottomSheetViewModel", "showAirPlayDeviceList: Not yet implemented");
     }
 }
