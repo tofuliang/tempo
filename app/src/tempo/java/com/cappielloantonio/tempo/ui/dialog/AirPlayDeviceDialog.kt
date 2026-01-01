@@ -1,6 +1,5 @@
 package com.cappielloantonio.tempo.ui.dialog
 
-import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,7 +13,6 @@ import com.cappielloantonio.tempo.R
 import com.cappielloantonio.tempo.model.AirPlayDevice
 import com.cappielloantonio.tempo.ui.adapter.AirPlayDeviceAdapter
 import com.cappielloantonio.tempo.viewmodel.PlayerBottomSheetViewModel
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class AirPlayDeviceDialog : DialogFragment() {
 
@@ -22,18 +20,6 @@ class AirPlayDeviceDialog : DialogFragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var disconnectButton: Button
     private lateinit var adapter: AirPlayDeviceAdapter
-
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        viewModel = ViewModelProvider(requireActivity()).get(PlayerBottomSheetViewModel::class.java)
-
-        val view = LayoutInflater.from(requireContext())
-            .inflate(R.layout.dialog_airplay_device_list, null, false)
-
-        return MaterialAlertDialogBuilder(requireContext())
-            .setTitle("AirPlay")
-            .setView(view)
-            .create()
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

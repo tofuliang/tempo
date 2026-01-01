@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LifecycleOwner;
@@ -257,7 +258,8 @@ public class PlayerBottomSheetViewModel extends AndroidViewModel {
         return currentAirPlayDevice;
     }
 
-    public void connectToAirPlayDevice(AirPlayDevice device) {
+    public void connectToAirPlayDevice(@Nullable AirPlayDevice device) {
+        if (device == null) return;
         // TODO: Implement AirPlay connection (will use AirPlayConnectionManager in later integration)
         android.util.Log.d(TAG, "connectToAirPlayDevice: " + device.getName());
         currentAirPlayDevice.postValue(device);
