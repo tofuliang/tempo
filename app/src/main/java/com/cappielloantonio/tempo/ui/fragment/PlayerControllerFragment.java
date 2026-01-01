@@ -58,6 +58,7 @@ public class PlayerControllerFragment extends Fragment {
     private ConstraintLayout playerQuickActionView;
     private ImageButton playerOpenQueueButton;
     private ImageButton playerTrackInfo;
+    private ImageButton airPlayCastButton;
 
     private MainActivity activity;
     private PlayerBottomSheetViewModel playerBottomSheetViewModel;
@@ -74,6 +75,7 @@ public class PlayerControllerFragment extends Fragment {
 
         init();
         initQuickActionView();
+        initAirPlayButton();
         initCoverLyricsSlideView();
         initMediaListenable();
         initMediaLabelButton();
@@ -113,6 +115,7 @@ public class PlayerControllerFragment extends Fragment {
         playerQuickActionView = bind.getRoot().findViewById(R.id.player_quick_action_view);
         playerOpenQueueButton = bind.getRoot().findViewById(R.id.player_open_queue_button);
         playerTrackInfo = bind.getRoot().findViewById(R.id.player_info_track);
+        airPlayCastButton = bind.getRoot().findViewById(R.id.airplay_cast_button);
     }
 
     private void initQuickActionView() {
@@ -124,6 +127,21 @@ public class PlayerControllerFragment extends Fragment {
                 playerBottomSheetFragment.goToQueuePage();
             }
         });
+    }
+
+    private void initAirPlayButton() {
+        if (airPlayCastButton != null) {
+            airPlayCastButton.setOnClickListener(view -> {
+                playerBottomSheetViewModel.showAirPlayDeviceList();
+            });
+
+            // Observe AirPlay devices
+            playerBottomSheetViewModel.getAirPlayDevices().observe(getViewLifecycleOwner(), devices -> {
+                if (airPlayCastButton != null) {
+                    airPlayCastButton.setVisibility(devices != null && !devices.isEmpty() ? View.VISIBLE : View.GONE);
+                }
+            });
+        }
     }
 
     private void initializeBrowser() {

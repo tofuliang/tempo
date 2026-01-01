@@ -12,6 +12,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.media3.common.util.UnstableApi;
 
 import com.cappielloantonio.tempo.interfaces.StarCallback;
+import com.cappielloantonio.tempo.model.AirPlayDevice;
 import com.cappielloantonio.tempo.model.Download;
 import com.cappielloantonio.tempo.model.Queue;
 import com.cappielloantonio.tempo.repository.AlbumRepository;
@@ -54,6 +55,7 @@ public class PlayerBottomSheetViewModel extends AndroidViewModel {
     private final MutableLiveData<AlbumID3> liveAlbum = new MutableLiveData<>(null);
     private final MutableLiveData<ArtistID3> liveArtist = new MutableLiveData<>(null);
     private final MutableLiveData<List<Child>> instantMix = new MutableLiveData<>(null);
+    private final MutableLiveData<List<AirPlayDevice>> airPlayDevices = new MutableLiveData<>(Collections.emptyList());
     private boolean lyricsSyncState = true;
 
 
@@ -240,5 +242,19 @@ public class PlayerBottomSheetViewModel extends AndroidViewModel {
 
     public boolean getSyncLyricsState() {
         return lyricsSyncState;
+    }
+
+    public LiveData<List<AirPlayDevice>> getAirPlayDevices() {
+        return airPlayDevices;
+    }
+
+    public void setAirPlayDevices(List<AirPlayDevice> devices) {
+        airPlayDevices.postValue(devices);
+    }
+
+    public void showAirPlayDeviceList() {
+        // This method will be called when the user clicks the AirPlay button
+        // The actual device selection dialog will be implemented in a later task
+        // For now, this is a placeholder that can be extended
     }
 }
