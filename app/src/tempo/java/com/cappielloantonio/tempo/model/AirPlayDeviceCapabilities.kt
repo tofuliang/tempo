@@ -1,5 +1,6 @@
 package com.cappielloantonio.tempo.model
 
+import android.os.Parcelable
 import androidx.annotation.Keep
 import kotlinx.parcelize.Parcelize
 
