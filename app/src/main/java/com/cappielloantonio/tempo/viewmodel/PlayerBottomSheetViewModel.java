@@ -56,6 +56,7 @@ public class PlayerBottomSheetViewModel extends AndroidViewModel {
     private final MutableLiveData<ArtistID3> liveArtist = new MutableLiveData<>(null);
     private final MutableLiveData<List<Child>> instantMix = new MutableLiveData<>(null);
     private final MutableLiveData<List<AirPlayDevice>> airPlayDevices = new MutableLiveData<>(Collections.emptyList());
+    private final MutableLiveData<AirPlayDevice> currentAirPlayDevice = new MutableLiveData<>(null);
     private boolean lyricsSyncState = true;
 
 
@@ -252,8 +253,24 @@ public class PlayerBottomSheetViewModel extends AndroidViewModel {
         airPlayDevices.postValue(devices);
     }
 
+    public LiveData<AirPlayDevice> getCurrentAirPlayDevice() {
+        return currentAirPlayDevice;
+    }
+
+    public void connectToAirPlayDevice(AirPlayDevice device) {
+        // TODO: Implement AirPlay connection (will use AirPlayConnectionManager in later integration)
+        android.util.Log.d(TAG, "connectToAirPlayDevice: " + device.getName());
+        currentAirPlayDevice.postValue(device);
+    }
+
+    public void disconnectFromAirPlay() {
+        // TODO: Implement AirPlay disconnection (will use AirPlayConnectionManager in later integration)
+        android.util.Log.d(TAG, "disconnectFromAirPlay");
+        currentAirPlayDevice.postValue(null);
+    }
+
     public void showAirPlayDeviceList() {
-        // TODO: Implement device selection dialog (Task 10)
-        android.util.Log.d("PlayerBottomSheetViewModel", "showAirPlayDeviceList: Not yet implemented");
+        // This will be called from the fragment - dialog will be shown there
+        android.util.Log.d(TAG, "showAirPlayDeviceList called");
     }
 }

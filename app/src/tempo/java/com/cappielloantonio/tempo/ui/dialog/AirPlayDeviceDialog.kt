@@ -55,8 +55,7 @@ class AirPlayDeviceDialog : DialogFragment() {
 
     private fun setupRecyclerView() {
         adapter = AirPlayDeviceAdapter { device ->
-            // TODO: Connect to device (will be implemented in Task 12)
-            // viewModel.connectToAirPlayDevice(device)
+            viewModel.connectToAirPlayDevice(device)
             dismiss()
         }
 
@@ -71,14 +70,12 @@ class AirPlayDeviceDialog : DialogFragment() {
             adapter.submitList(devices)
         }
 
-        // TODO: Observe current connected device (will be implemented in Task 12)
-        // viewModel.currentAirPlayDevice.observe(viewLifecycleOwner) { device ->
-        //     disconnectButton.visibility = if (device != null) View.VISIBLE else View.GONE
-        // }
+        viewModel.currentAirPlayDevice.observe(viewLifecycleOwner) { device ->
+            disconnectButton.visibility = if (device != null) View.VISIBLE else View.GONE
+        }
 
         disconnectButton.setOnClickListener {
-            // TODO: Disconnect from device (will be implemented in Task 12)
-            // viewModel.disconnectFromAirPlay()
+            viewModel.disconnectFromAirPlay()
             dismiss()
         }
     }
