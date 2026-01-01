@@ -1,49 +1,52 @@
 package com.cappielloantonio.tempo.ui.adapter
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.cappielloantonio.tempo.R
+import com.cappielloantonio.tempo.databinding.ItemAirplayDeviceBinding
 import com.cappielloantonio.tempo.model.AirPlayDevice
 
-/**
- * Stub adapter for AirPlay device list.
- * This is a temporary implementation - the full adapter will be created in Task 11.
- */
 class AirPlayDeviceAdapter(
     private val onDeviceClick: (AirPlayDevice) -> Unit
-) : ListAdapter<AirPlayDevice, AirPlayDeviceAdapter.ViewHolder>(DiffCallback()) {
+) : ListAdapter<AirPlayDevice, AirPlayDeviceAdapter.ViewHolder>(DeviceDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        // Using simple_list_item_1 as a stub layout
-        val view = LayoutInflater.from(parent.context)
-            .inflate(android.R.layout.simple_list_item_1, parent, false)
-        return ViewHolder(view)
+        val binding = ItemAirplayDeviceBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
+            false
+        )
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val device = getItem(position)
-        holder.bind(device, onDeviceClick)
+        holder.bind(getItem(position))
     }
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val textView: TextView = itemView.findViewById(android.R.id.text1)
+    inner class ViewHolder(
+        private val binding: ItemAirplayDeviceBinding
+    ) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(device: AirPlayDevice, onDeviceClick: (AirPlayDevice) -> Unit) {
-            textView.text = device.name
-            itemView.setOnClickListener {
+        fun bind(device: AirPlayDevice) {
+            binding.deviceName.text = device.name
+            binding.deviceModel.text = device.model
+            binding.encryptionIcon.visibility = if (device.supportsEncryption) {
+                android.view.View.VISIBLE
+            } else {
+                android.view.View.GONE
+            }
+
+            binding.root.setOnClickListener {
                 onDeviceClick(device)
             }
         }
     }
 
-    private class DiffCallback : DiffUtil.ItemCallback<AirPlayDevice>() {
+    class DeviceDiffCallback : DiffUtil.ItemCallback<AirPlayDevice>() {
         override fun areItemsTheSame(oldItem: AirPlayDevice, newItem: AirPlayDevice): Boolean {
-            return oldItem.name == newItem.name && oldItem.host == newItem.host
+            return oldItem.deviceId == newItem.deviceId
         }
 
         override fun areContentsTheSame(oldItem: AirPlayDevice, newItem: AirPlayDevice): Boolean {
