@@ -11,6 +11,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
+import org.junit.Assume
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -43,12 +44,23 @@ class AirPlayIntegrationTest {
 
     @After
     fun tearDown() {
-        // Clean up resources after each test
-        deviceScanner.stopScan()
-        deviceScanner.close()
+        // Clean up device scanner resources
+        try {
+            deviceScanner.stopScan()
+            deviceScanner.close()
+        } catch (e: Exception) {
+            // Log but continue cleanup
+            println("Warning: Error during device scanner cleanup: ${e.message}")
+        }
 
-        if (connectionManager.isConnected) {
-            connectionManager.disconnect()
+        // Clean up connection manager
+        try {
+            if (connectionManager.isConnected) {
+                connectionManager.disconnect()
+            }
+        } catch (e: Exception) {
+            // Log but don't fail teardown
+            println("Warning: Error during connection manager cleanup: ${e.message}")
         }
     }
 
@@ -148,10 +160,7 @@ class AirPlayIntegrationTest {
 
         val devices = deviceScanner.getAvailableDevices()
 
-        if (devices.isEmpty()) {
-            println("No AirPlay devices found - skipping connection test")
-            return@runBlocking // Skip test gracefully
-        }
+        Assume.assumeTrue(devices.isNotEmpty())
 
         // Try to connect to the first available device
         val device = devices.first()
@@ -183,10 +192,7 @@ class AirPlayIntegrationTest {
 
         val devices = deviceScanner.getAvailableDevices()
 
-        if (devices.isEmpty()) {
-            println("No devices found - skipping field validation")
-            return@runBlocking
-        }
+        Assume.assumeTrue(devices.isNotEmpty())
 
         devices.forEach { device ->
             assertNotNull("Device name should not be null", device.name)
