@@ -10,8 +10,10 @@ data class RTSPRequest(
 ) {
     enum class RTSPMethod(val value: String) {
         OPTIONS("OPTIONS"),
+        ANNOUNCE("ANNOUNCE"),
         DESCRIBE("DESCRIBE"),
         SETUP("SETUP"),
+        RECORD("RECORD"),
         PLAY("PLAY"),
         PAUSE("PAUSE"),
         TEARDOWN("TEARDOWN"),
