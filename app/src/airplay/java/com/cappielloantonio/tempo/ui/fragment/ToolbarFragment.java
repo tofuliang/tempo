@@ -16,6 +16,7 @@ import androidx.media3.common.util.UnstableApi;
 import com.cappielloantonio.tempo.R;
 import com.cappielloantonio.tempo.databinding.FragmentToolbarBinding;
 import com.cappielloantonio.tempo.ui.activity.MainActivity;
+import com.cappielloantonio.tempo.ui.dialog.AirPlayDeviceDialog;
 import com.google.android.gms.cast.framework.CastButtonFactory;
 
 @UnstableApi
@@ -56,6 +57,11 @@ public class ToolbarFragment extends Fragment {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.action_search) {
             activity.navController.navigate(R.id.searchFragment);
+            return true;
+        } else if (item.getItemId() == R.id.action_airplay) {
+            // Show AirPlay device dialog
+            AirPlayDeviceDialog dialog = new AirPlayDeviceDialog();
+            dialog.show(getChildFragmentManager(), "AirPlayDeviceDialog");
             return true;
         } else if (item.getItemId() == R.id.action_settings) {
             activity.navController.navigate(R.id.settingsFragment);
