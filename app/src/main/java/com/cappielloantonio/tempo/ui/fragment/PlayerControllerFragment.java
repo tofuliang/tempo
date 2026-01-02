@@ -28,6 +28,7 @@ import com.cappielloantonio.tempo.R;
 import com.cappielloantonio.tempo.databinding.InnerFragmentPlayerControllerBinding;
 import com.cappielloantonio.tempo.service.MediaService;
 import com.cappielloantonio.tempo.ui.activity.MainActivity;
+import com.cappielloantonio.tempo.ui.dialog.AirPlayDeviceDialog;
 import com.cappielloantonio.tempo.ui.dialog.RatingDialog;
 import com.cappielloantonio.tempo.ui.dialog.TrackInfoDialog;
 import com.cappielloantonio.tempo.ui.fragment.pager.PlayerControllerHorizontalPager;
@@ -132,7 +133,8 @@ public class PlayerControllerFragment extends Fragment {
     private void initAirPlayButton() {
         if (airPlayCastButton != null) {
             airPlayCastButton.setOnClickListener(view -> {
-                playerBottomSheetViewModel.showAirPlayDeviceList();
+                // Show device dialog immediately (even if empty)
+                showAirPlayDeviceDialog();
             });
 
             // Observe AirPlay devices
@@ -401,5 +403,10 @@ public class PlayerControllerFragment extends Fragment {
     private void resetPlaybackParameters(MediaBrowser mediaBrowser) {
         mediaBrowser.setPlaybackParameters(new PlaybackParameters(Constants.MEDIA_PLAYBACK_SPEED_100));
         // TODO Resettare lo skip del silenzio
+    }
+
+    private void showAirPlayDeviceDialog() {
+        AirPlayDeviceDialog dialog = new AirPlayDeviceDialog();
+        dialog.show(getParentFragmentManager(), "AirPlayDeviceDialog");
     }
 }

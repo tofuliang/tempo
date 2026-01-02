@@ -22,6 +22,7 @@ import com.cappielloantonio.tempo.repository.FavoriteRepository;
 import com.cappielloantonio.tempo.repository.OpenRepository;
 import com.cappielloantonio.tempo.repository.QueueRepository;
 import com.cappielloantonio.tempo.repository.SongRepository;
+import com.cappielloantonio.tempo.service.AirPlayDeviceScanner;
 import com.cappielloantonio.tempo.subsonic.models.AlbumID3;
 import com.cappielloantonio.tempo.subsonic.models.ArtistID3;
 import com.cappielloantonio.tempo.subsonic.models.Child;
@@ -58,6 +59,7 @@ public class PlayerBottomSheetViewModel extends AndroidViewModel {
     private final MutableLiveData<List<Child>> instantMix = new MutableLiveData<>(null);
     private final MutableLiveData<List<AirPlayDevice>> airPlayDevices = new MutableLiveData<>(Collections.emptyList());
     private final MutableLiveData<AirPlayDevice> currentAirPlayDevice = new MutableLiveData<>(null);
+    private final AirPlayDeviceScanner airPlayDeviceScanner;
     private boolean lyricsSyncState = true;
 
 
@@ -70,6 +72,7 @@ public class PlayerBottomSheetViewModel extends AndroidViewModel {
         queueRepository = new QueueRepository();
         favoriteRepository = new FavoriteRepository();
         openRepository = new OpenRepository();
+        airPlayDeviceScanner = new AirPlayDeviceScanner(application);
     }
 
     public LiveData<List<Queue>> getQueueSong() {
