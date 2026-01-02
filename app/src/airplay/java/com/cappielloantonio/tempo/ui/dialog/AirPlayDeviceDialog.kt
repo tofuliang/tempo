@@ -1,25 +1,34 @@
 package com.cappielloantonio.tempo.ui.dialog
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.cappielloantonio.tempo.R
 import com.cappielloantonio.tempo.model.AirPlayDevice
+import com.cappielloantonio.tempo.service.AirPlayDeviceScanner
 import com.cappielloantonio.tempo.ui.adapter.AirPlayDeviceAdapter
 import com.cappielloantonio.tempo.viewmodel.PlayerBottomSheetViewModel
+import kotlinx.coroutines.launch
 
 class AirPlayDeviceDialog : DialogFragment() {
 
     private lateinit var viewModel: PlayerBottomSheetViewModel
+    private lateinit var airplayScanner: AirPlayDeviceScanner
     private lateinit var recyclerView: RecyclerView
     private lateinit var disconnectButton: Button
     private lateinit var adapter: AirPlayDeviceAdapter
+
+    companion object {
+        private const val TAG = "AirPlayDeviceDialog"
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -35,11 +44,17 @@ class AirPlayDeviceDialog : DialogFragment() {
         // Initialize ViewModel
         viewModel = ViewModelProvider(requireActivity()).get(PlayerBottomSheetViewModel::class.java)
 
+        // Initialize AirPlay scanner
+        airplayScanner = AirPlayDeviceScanner(requireContext())
+        Log.i(TAG, "Starting AirPlay device scan...")
+        airplayScanner.startScan()
+
         recyclerView = view.findViewById(R.id.airplay_device_recycler)
         disconnectButton = view.findViewById(R.id.disconnect_button)
 
         setupRecyclerView()
         observeViewModel()
+        observeScanner()
     }
 
     private fun setupRecyclerView() {
@@ -67,5 +82,22 @@ class AirPlayDeviceDialog : DialogFragment() {
             viewModel.disconnectFromAirPlay()
             dismiss()
         }
+    }
+
+    private fun observeScanner() {
+        // Observe discovered devices from scanner
+        lifecycleScope.launch {
+            airplayScanner.discoveredDevices.collect { devices ->
+                Log.d(TAG, "Devices discovered: ${devices.size}")
+                adapter.submitList(devices)
+            }
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        // Stop scanning when dialog is destroyed
+        Log.i(TAG, "Stopping AirPlay device scan")
+        airplayScanner.stopScan()
     }
 }

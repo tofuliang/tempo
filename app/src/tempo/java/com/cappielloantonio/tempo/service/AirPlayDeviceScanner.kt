@@ -18,8 +18,8 @@ class AirPlayDeviceScanner(private val context: Context) {
 
     companion object {
         private const val TAG = "AirPlayDeviceScanner"
-        private const val SERVICE_TYPE_AIRPLAY = "_airplay._tcp."
-        private const val SERVICE_TYPE_AIRPLAY_2 = "_airplay-2._tcp."
+        private const val SERVICE_TYPE_RAOP = "_raop._tcp."  // AirPlay 1 (most devices)
+        private const val SERVICE_TYPE_AIRPLAY = "_airplay._tcp."  // AirPlay 2
     }
 
     private val nsdManager: NsdManager by lazy {
@@ -106,7 +106,7 @@ class AirPlayDeviceScanner(private val context: Context) {
             }
         }
 
-        nsdManager.discoverServices(SERVICE_TYPE_AIRPLAY, NsdManager.PROTOCOL_DNS_SD, discoveryListener)
+        nsdManager.discoverServices(SERVICE_TYPE_RAOP, NsdManager.PROTOCOL_DNS_SD, discoveryListener)
     }
 
     fun stopScan() {
@@ -131,18 +131,44 @@ class AirPlayDeviceScanner(private val context: Context) {
     private fun parseServiceInfo(serviceInfo: NsdServiceInfo): AirPlayDevice? {
         return try {
             val attributes = serviceInfo.attributes
-            val deviceId = String(attributes["deviceid"] ?: return null, Charsets.UTF_8)
-            val features = String(attributes["features"] ?: byteArrayOf(48), Charsets.UTF_8).toInt(16)
-            val model = String(attributes["model"] ?: byteArrayOf(), Charsets.UTF_8)
+
+            // Get device ID with fallback to service name
+            val deviceId = if (attributes.containsKey("deviceid")) {
+                String(attributes["deviceid"]!!, Charsets.UTF_8)
+            } else {
+                // Generate a stable ID from service name for AirPlay 1 devices
+                "raop-${serviceInfo.serviceName}"
+            }
+
+            // Parse features (optional for AirPlay 1)
+            val features = if (attributes.containsKey("features")) {
+                String(attributes["features"]!!, Charsets.UTF_8).toInt(16)
+            } else {
+                0x0  // No features for basic AirPlay 1
+            }
+
+            // Get model (optional)
+            val model = if (attributes.containsKey("model")) {
+                String(attributes["model"]!!, Charsets.UTF_8)
+            } else {
+                "AirPlay"  // Default model name
+            }
+
+            // Get host address
+            val host = serviceInfo.host.hostAddress
+            if (host == null) {
+                Log.w(TAG, "No host address for ${serviceInfo.serviceName}")
+                return null
+            }
 
             AirPlayDevice(
                 name = serviceInfo.serviceName,
-                host = serviceInfo.host.hostAddress ?: return null,
+                host = host,
                 port = serviceInfo.port,
                 deviceId = deviceId,
                 features = features,
                 model = model,
-                version = 2,
+                version = 1,  // RAOP is AirPlay 1
                 supportsEncryption = (features and AirPlayDevice.FEATURE_ENCRYPTION) != 0,
                 lastSeen = System.currentTimeMillis()
             )
