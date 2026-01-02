@@ -32,6 +32,9 @@ class AirPlayDeviceDialog : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Initialize ViewModel
+        viewModel = ViewModelProvider(requireActivity()).get(PlayerBottomSheetViewModel::class.java)
+
         recyclerView = view.findViewById(R.id.airplay_device_recycler)
         disconnectButton = view.findViewById(R.id.disconnect_button)
 
