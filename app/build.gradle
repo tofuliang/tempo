@@ -42,6 +42,11 @@ android {
             dimension = "default"
             applicationId "com.cappielloantonio.play.tempo"
         }
+
+        airplay {
+            dimension = "default"
+            applicationId "com.cappielloantonio.airplay.tempo"
+        }
     }
 
     buildTypes {
@@ -99,6 +104,7 @@ dependencies {
     implementation 'androidx.media3:media3-exoplayer-hls:1.5.1'
     tempoImplementation 'androidx.media3:media3-cast:1.5.1'
     playImplementation 'androidx.media3:media3-cast:1.5.1'
+    airplayImplementation 'androidx.media3:media3-cast:1.5.1'
 
     annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'
     annotationProcessor 'androidx.room:room-compiler:2.6.1'
