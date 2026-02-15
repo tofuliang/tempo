@@ -26,3 +26,17 @@
 
 -keep class **.reflect.TypeToken { *; }
 -keep class * extends **.reflect.TypeToken
+
+# AirPlay Native - Keep all JNI-related classes and methods
+-keep class com.cappielloantonio.tempo.airplay.AirPlayClient {
+    *;
+}
+-keep interface com.cappielloantonio.tempo.airplay.AirPlayClient$StateCallback {
+    *;
+}
+-keep class com.cappielloantonio.tempo.airplay.** { *; }
+
+# Keep native methods
+-keepclasseswithmembernames class * {
+    native <methods>;
+}

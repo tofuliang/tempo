@@ -1,4 +1,4 @@
-﻿<resources>
+<resources>
     <string name="activity_battery_optimizations_conclusion">如果遇到问题，请访问 https://dontkillmyapp.com。 省电优化选项可能会影响应用的性能，网站上提供了如何禁用这些选项的详细说明。</string>
     <string name="activity_battery_optimizations_summary">请禁用针对媒体锁屏播放的电池优化。</string>
     <string name="activity_battery_optimizations_title">电池优化</string>
@@ -396,4 +396,13 @@
     <string name="playlist_editor_dialog_action_delete_toast">长按删除</string>
     <string name="server_signup_dialog_action_delete_toast">长按删除</string>
     <string name="server_signup_dialog_hint_local_address">本地 URL</string>
+
+    <string name="airplay_dialog_title">选择 AirPlay 设备</string>
+    <string name="airplay_dialog_volume">音量</string>
+    <string name="airplay_status_connecting">正在连接…</string>
+    <string name="airplay_status_connected">已连接</string>
+    <string name="airplay_status_playing">正在播放</string>
+    <string name="airplay_status_paused">已暂停</string>
+    <string name="airplay_status_buffering">正在缓冲…</string>
+    <string name="airplay_status_stopped">已停止</string>
 </resources>

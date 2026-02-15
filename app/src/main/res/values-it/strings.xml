@@ -409,4 +409,13 @@
 	<string name="undraw_page">unDraw</string>
 	<string name="undraw_thanks">Un ringraziamento speciale va a unDraw, senza le cui illustrazioni non avremmo potuto rendere questa applicazione più bella.</string>
 	<string name="undraw_url">https://undraw.co/</string>
+
+	<string name="airplay_dialog_title">Seleziona dispositivo AirPlay</string>
+	<string name="airplay_dialog_volume">Volume</string>
+	<string name="airplay_status_connecting">Connessione…</string>
+	<string name="airplay_status_connected">Connesso</string>
+	<string name="airplay_status_playing">In riproduzione</string>
+	<string name="airplay_status_paused">In pausa</string>
+	<string name="airplay_status_buffering">Buffering…</string>
+	<string name="airplay_status_stopped">Fermato</string>
 </resources>

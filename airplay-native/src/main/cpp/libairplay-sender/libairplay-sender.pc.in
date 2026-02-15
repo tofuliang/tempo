@@ -1,0 +1,10 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=${prefix}
+libdir=${prefix}/@CMAKE_INSTALL_LIBDIR@
+includedir=${prefix}/@CMAKE_INSTALL_INCLUDEDIR@
+
+Name: libairplay-sender
+Description: AirPlay Audio Sender Library
+Version: @PROJECT_VERSION@
+Libs: -L${libdir} -lairplay_sender
+Cflags: -I${includedir}

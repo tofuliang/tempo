@@ -406,4 +406,13 @@
     <string name="track_info_summary_transcoding_codec">Tempo wird den Server bitten, die Datei zu transkodieren. Der vom Benutzer gewünschte Codec ist %1$s, die Bitrate wird dieselbe wie bei der original Datei sein. Die potentielle Transkodierung der Datei in das gewünschte Format ist vom Server abhängig. Dieser kann die Operation gegebenenfalls nicht unterstützen.</string>
     <string name="track_info_summary_transcoding_bitrate">Tempo wird den Server bitten, die Bitrate der Datei zu erändern. Die vom Benutzer gewünschte Bitrate ist %1$s, der Codec der Originaldatei wird nicht verändert. Änderungen an der Bitrate der Datei werden vom Server ausgeführt, dieser kann die Operation gegebenenfalls nicht unterstützen.</string>
     <string name="track_info_summary_full_transcode">Die Anwendung wird den Server bitten die Datei zu transkodieren und die Bitrate zu verändern. Der vom Benutzer gewünschte Codec ist %1$s, mit der Bitrate %2$s. Änderungen am Codec und an der Bitrate der Datei werden vom Server ausgeführt, dieser kann die Operation gegebenenfalls nicht unterstützen.</string>
+
+    <string name="airplay_dialog_title">AirPlay-Gerät auswählen</string>
+    <string name="airplay_dialog_volume">Lautstärke</string>
+    <string name="airplay_status_connecting">Verbindung wird hergestellt…</string>
+    <string name="airplay_status_connected">Verbunden</string>
+    <string name="airplay_status_playing">Wiedergabe</string>
+    <string name="airplay_status_paused">Pausiert</string>
+    <string name="airplay_status_buffering">Puffern…</string>
+    <string name="airplay_status_stopped">Gestoppt</string>
 </resources>

@@ -33,6 +33,7 @@ class MediaService : MediaLibraryService(), SessionAvailabilityListener {
     private lateinit var player: ExoPlayer
     private lateinit var castPlayer: CastPlayer
     private lateinit var mediaLibrarySession: MediaLibrarySession
+    private lateinit var airPlayBridge: AirPlayMediaBridge
 
     override fun onCreate() {
         super.onCreate()
@@ -42,6 +43,8 @@ class MediaService : MediaLibraryService(), SessionAvailabilityListener {
         initializeCastPlayer()
         initializeMediaLibrarySession()
         initializePlayerListener()
+        airPlayBridge = AirPlayMediaBridge(player)
+        airPlayBridge.initialize()
 
         setPlayer(
                 null,
@@ -62,6 +65,7 @@ class MediaService : MediaLibraryService(), SessionAvailabilityListener {
     }
 
     override fun onDestroy() {
+        airPlayBridge.release()
         releasePlayer()
         super.onDestroy()
     }
@@ -112,6 +116,10 @@ class MediaService : MediaLibraryService(), SessionAvailabilityListener {
             override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
                 if (mediaItem == null) return
 
+                if (airPlayBridge.isActive) {
+                    airPlayBridge.sendCurrentTrack()
+                }
+
                 if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_SEEK || reason == Player.MEDIA_ITEM_TRANSITION_REASON_AUTO) {
                     MediaManager.setLastPlayedTimestamp(mediaItem)
                 }
@@ -127,11 +135,13 @@ class MediaService : MediaLibraryService(), SessionAvailabilityListener {
 
             override fun onIsPlayingChanged(isPlaying: Boolean) {
                 if (!isPlaying) {
+                    if (!player.playWhenReady) airPlayBridge.onPlayerPaused()
                     MediaManager.setPlayingPausedTimestamp(
                             player.currentMediaItem,
                             player.currentPosition
                     )
                 } else {
+                    airPlayBridge.onPlayerResumed()
                     MediaManager.scrobble(player.currentMediaItem, false)
                 }
             }
@@ -154,6 +164,10 @@ class MediaService : MediaLibraryService(), SessionAvailabilityListener {
                     reason: Int
             ) {
                 super.onPositionDiscontinuity(oldPosition, newPosition, reason)
+
+                if (reason == Player.DISCONTINUITY_REASON_SEEK) {
+                    airPlayBridge.onPlayerSeeked(newPosition.positionMs)
+                }
 
                 if (reason == Player.DISCONTINUITY_REASON_AUTO_TRANSITION) {
                     if (oldPosition.mediaItem?.mediaMetadata?.extras?.getString("type") == Constants.MEDIA_TYPE_MUSIC) {

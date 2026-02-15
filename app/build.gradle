@@ -31,16 +31,19 @@ android {
         tempo {
             dimension = "default"
             applicationId 'com.cappielloantonio.tempo'
+            manifestPlaceholders = [applicationName: "App"]
         }
 
         notquitemy {
             dimension = "default"
             applicationId "com.cappielloantonio.notquitemy.tempo"
+            manifestPlaceholders = [applicationName: "App"]
         }
 
         play {
             dimension = "default"
             applicationId "com.cappielloantonio.play.tempo"
+            manifestPlaceholders = [applicationName: "App"]
         }
     }
 
@@ -50,6 +53,15 @@ android {
             minifyEnabled true
             debuggable false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    splits {
+        abi {
+            enable true
+            reset()
+            include 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
+            universalApk true
         }
     }
 
@@ -71,7 +83,8 @@ android {
 }
 
 dependencies {
-    implementation files('../libs/lib-decoder-ffmpeg-release.aar')
+    implementation(name: 'airplay-native-release', ext: 'aar')
+    implementation(name: 'lib-decoder-ffmpeg-release', ext: 'aar')
 
     // AndroidX
     implementation 'androidx.constraintlayout:constraintlayout:2.2.0'
@@ -107,4 +120,17 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.11.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.14'
     implementation 'com.squareup.retrofit2:converter-gson:2.11.0'
+
+    // Testing
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'io.mockk:mockk:1.13.5'
+    testImplementation 'org.mockito:mockito-core:5.8.0'
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3'
+
+    // Android Instrumented Tests
+    androidTestImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test:runner:1.5.2'
+    androidTestImplementation 'androidx.test:rules:1.5.0'
+    androidTestImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3'
 }

@@ -13,3 +13,6 @@
 .externalNativeBuild
 .cxx
 /.idea/
+airplay-native/build/
+airplay-native/src/main/jniLibs/
+build_ffmpeg_temp/

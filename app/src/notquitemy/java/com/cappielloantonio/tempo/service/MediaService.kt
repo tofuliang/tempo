@@ -11,8 +11,6 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
-import androidx.media3.exoplayer.source.TrackGroupArray
-import androidx.media3.exoplayer.trackselection.TrackSelectionArray
 import androidx.media3.session.*
 import androidx.media3.session.MediaSession.ControllerInfo
 import com.cappielloantonio.tempo.R
@@ -33,6 +31,7 @@ class MediaService : MediaLibraryService() {
     private lateinit var player: ExoPlayer
     private lateinit var mediaLibrarySession: MediaLibrarySession
     private lateinit var customCommands: List<CommandButton>
+    private lateinit var airPlayBridge: AirPlayMediaBridge
 
     private var customLayout = ImmutableList.of<CommandButton>()
 
@@ -50,6 +49,8 @@ class MediaService : MediaLibraryService() {
         initializePlayer()
         initializeMediaLibrarySession()
         initializePlayerListener()
+        airPlayBridge = AirPlayMediaBridge(player)
+        airPlayBridge.initialize()
 
         setPlayer(player)
     }
@@ -59,6 +60,7 @@ class MediaService : MediaLibraryService() {
     }
 
     override fun onDestroy() {
+        airPlayBridge.release()
         releasePlayer()
         super.onDestroy()
     }
@@ -73,8 +75,7 @@ class MediaService : MediaLibraryService() {
             val availableSessionCommands = connectionResult.availableSessionCommands.buildUpon()
 
             customCommands.forEach { commandButton ->
-                // TODO: Aggiungere i comandi personalizzati
-                // commandButton.sessionCommand?.let { availableSessionCommands.add(it) }
+                commandButton.sessionCommand?.let { availableSessionCommands.add(it) }
             }
 
             return MediaSession.ConnectionResult.accept(
@@ -171,6 +172,10 @@ class MediaService : MediaLibraryService() {
             override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
                 if (mediaItem == null) return
 
+                if (airPlayBridge.isActive) {
+                    airPlayBridge.sendCurrentTrack()
+                }
+
                 if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_SEEK || reason == Player.MEDIA_ITEM_TRANSITION_REASON_AUTO) {
                     MediaManager.setLastPlayedTimestamp(mediaItem)
                 }
@@ -186,11 +191,13 @@ class MediaService : MediaLibraryService() {
 
             override fun onIsPlayingChanged(isPlaying: Boolean) {
                 if (!isPlaying) {
+                    if (!player.playWhenReady) airPlayBridge.onPlayerPaused()
                     MediaManager.setPlayingPausedTimestamp(
                         player.currentMediaItem,
                         player.currentPosition
                     )
                 } else {
+                    airPlayBridge.onPlayerResumed()
                     MediaManager.scrobble(player.currentMediaItem, false)
                 }
             }
@@ -212,6 +219,10 @@ class MediaService : MediaLibraryService() {
                 reason: Int
             ) {
                 super.onPositionDiscontinuity(oldPosition, newPosition, reason)
+
+                if (reason == Player.DISCONTINUITY_REASON_SEEK) {
+                    airPlayBridge.onPlayerSeeked(newPosition.positionMs)
+                }
 
                 if (reason == Player.DISCONTINUITY_REASON_AUTO_TRANSITION) {
                     if (oldPosition.mediaItem?.mediaMetadata?.extras?.getString("type") == Constants.MEDIA_TYPE_MUSIC) {

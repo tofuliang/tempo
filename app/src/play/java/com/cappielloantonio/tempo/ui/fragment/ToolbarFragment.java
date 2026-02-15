@@ -15,7 +15,9 @@ import androidx.media3.common.util.UnstableApi;
 
 import com.cappielloantonio.tempo.R;
 import com.cappielloantonio.tempo.databinding.FragmentToolbarBinding;
+import com.cappielloantonio.tempo.service.AirPlaySessionManager;
 import com.cappielloantonio.tempo.ui.activity.MainActivity;
+import com.cappielloantonio.tempo.ui.dialog.AirPlayDevicePickerDialog;
 import com.google.android.gms.cast.framework.CastButtonFactory;
 
 @UnstableApi
@@ -24,6 +26,7 @@ public class ToolbarFragment extends Fragment {
 
     private FragmentToolbarBinding bind;
     private MainActivity activity;
+    private MenuItem airplayMenuItem;
 
     public ToolbarFragment() {
         // Required empty public constructor
@@ -40,6 +43,8 @@ public class ToolbarFragment extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.main_page_menu, menu);
         CastButtonFactory.setUpMediaRouteButton(requireContext(), menu, R.id.media_route_menu_item);
+        airplayMenuItem = menu.findItem(R.id.action_airplay);
+        observeAirPlayState();
     }
 
     @Override
@@ -57,11 +62,26 @@ public class ToolbarFragment extends Fragment {
         if (item.getItemId() == R.id.action_search) {
             activity.navController.navigate(R.id.searchFragment);
             return true;
+        } else if (item.getItemId() == R.id.action_airplay) {
+            new AirPlayDevicePickerDialog().show(getParentFragmentManager(), "AirPlayPicker");
+            return true;
         } else if (item.getItemId() == R.id.action_settings) {
             activity.navController.navigate(R.id.settingsFragment);
             return true;
         }
 
         return false;
+    }
+
+    private void observeAirPlayState() {
+        AirPlaySessionManager.getInstance().getState().observe(getViewLifecycleOwner(), state -> {
+            if (airplayMenuItem == null) return;
+
+            if (state != null && state != AirPlaySessionManager.STATE_DISCONNECTED) {
+                airplayMenuItem.setIcon(R.drawable.ic_airplay_connected);
+            } else {
+                airplayMenuItem.setIcon(R.drawable.ic_airplay);
+            }
+        });
     }
 }

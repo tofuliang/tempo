@@ -291,6 +291,15 @@
     <string name="settings_image_size">Set image resolution</string>
     <string name="settings_language">Language</string>
     <string name="settings_logout_title">Log out</string>
+
+    <string name="airplay_dialog_title">Select AirPlay Device</string>
+    <string name="airplay_dialog_volume">Volume</string>
+    <string name="airplay_status_connecting">Connecting…</string>
+    <string name="airplay_status_connected">Connected</string>
+    <string name="airplay_status_playing">Playing</string>
+    <string name="airplay_status_paused">Paused</string>
+    <string name="airplay_status_buffering">Buffering…</string>
+    <string name="airplay_status_stopped">Stopped</string>
     <string name="settings_max_bitrate_download">Bitrate for downloads</string>
     <string name="settings_max_bitrate_mobile">Bitrate in mobile</string>
     <string name="settings_max_bitrate_wifi">Bitrate in Wi-Fi</string>

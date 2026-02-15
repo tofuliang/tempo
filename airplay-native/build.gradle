@@ -1,0 +1,41 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+android {
+    compileSdk 35
+    namespace 'com.cappielloantonio.tempo.airplay'
+
+    defaultConfig {
+        minSdkVersion 24
+        targetSdk 35
+
+        externalNativeBuild {
+            cmake {
+                cppFlags ""
+                abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
+            }
+        }
+    }
+
+    externalNativeBuild {
+        cmake {
+            path "src/main/cpp/CMakeLists.txt"
+            version "3.22.1"
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
+    packagingOptions {
+        jniLibs {
+            excludes += ['**/libavcodec.so', '**/libavformat.so', '**/libavutil.so', '**/libswresample.so', '**/libavdevice.so', '**/libavfilter.so', '**/libswscale.so']
+        }
+    }
+}

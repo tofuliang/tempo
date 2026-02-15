@@ -17,9 +17,14 @@ import androidx.media3.datasource.cache.CacheDataSource;
 import androidx.media3.datasource.cache.LeastRecentlyUsedCacheEvictor;
 import androidx.media3.datasource.cache.NoOpCacheEvictor;
 import androidx.media3.datasource.cache.SimpleCache;
+import androidx.media3.common.audio.AudioProcessor;
 import androidx.media3.exoplayer.DefaultRenderersFactory;
 import androidx.media3.exoplayer.RenderersFactory;
+import androidx.media3.exoplayer.audio.AudioSink;
+import androidx.media3.exoplayer.audio.DefaultAudioSink;
 import androidx.media3.exoplayer.offline.DownloadManager;
+
+import com.cappielloantonio.tempo.service.AirPlayMuteAudioProcessor;
 import androidx.media3.exoplayer.offline.DownloadNotificationHelper;
 
 import com.cappielloantonio.tempo.service.DownloaderManager;
@@ -62,7 +67,17 @@ public final class DownloadUtil {
                         ? (preferExtensionRenderer ? DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER : DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON)
                         : DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF;
 
-        return new DefaultRenderersFactory(context.getApplicationContext()).setExtensionRendererMode(extensionRendererMode);
+        return new DefaultRenderersFactory(context.getApplicationContext()) {
+            @Override
+            protected AudioSink buildAudioSink(Context context, boolean pcmEncodingRestrictionLifted,
+                                               boolean enableFloatOutput) {
+                AudioSink defaultSink = new DefaultAudioSink.Builder(context)
+                        .setEnableFloatOutput(enableFloatOutput)
+                        .setAudioProcessors(new AudioProcessor[]{new AirPlayMuteAudioProcessor()})
+                        .build();
+                return new com.cappielloantonio.tempo.service.AirPlayForwardingAudioSink(context, defaultSink);
+            }
+        }.setExtensionRendererMode(extensionRendererMode);
     }
 
     public static synchronized DataSource.Factory getHttpDataSourceFactory() {

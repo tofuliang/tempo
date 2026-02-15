@@ -1,0 +1,58 @@
+name: Manual Branch Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_flavor:
+        description: 'Build Flavor'
+        required: true
+        default: 'Play'
+        type: choice
+        options:
+          - Play
+          - Tempo
+          - Notquitemy
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Setup build tool version variable
+        shell: bash
+        run: |
+          BUILD_TOOL_VERSION=$(ls /usr/local/lib/android/sdk/build-tools/ | tail -n 1)
+          echo "BUILD_TOOL_VERSION=$BUILD_TOOL_VERSION" >> $GITHUB_ENV
+          echo Last build tool version is: $BUILD_TOOL_VERSION
+
+      - name: Build Release APK
+        run: ./gradlew assemble${{ github.event.inputs.build_flavor }}Release
+
+      - name: Sign APK
+        id: sign_apk
+        uses: r0adkll/sign-android-release@v1
+        with:
+          releaseDirectory: app/build/outputs/apk/${{ github.event.inputs.build_flavor == 'Play' && 'play' || github.event.inputs.build_flavor == 'Tempo' && 'tempo' || 'notquitemy' }}/release
+          signingKeyBase64: ${{ secrets.KEYSTORE_BASE64 }}
+          alias: ${{ secrets.KEY_ALIAS_GITHUB }}
+          keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD_GITHUB }}
+        env:
+          BUILD_TOOLS_VERSION: ${{ env.BUILD_TOOL_VERSION }}
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-${{ github.event.inputs.build_flavor }}-release
+          path: app/build/outputs/apk/${{ github.event.inputs.build_flavor == 'Play' && 'play' || github.event.inputs.build_flavor == 'Tempo' && 'tempo' || 'notquitemy' }}/release/*-signed.apk

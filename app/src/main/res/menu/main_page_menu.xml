@@ -8,6 +8,12 @@
         app:showAsAction="always" />
 
     <item
+        android:id="@+id/action_airplay"
+        android:icon="@drawable/ic_airplay"
+        android:title="AirPlay"
+        app:showAsAction="always" />
+
+    <item
         android:id="@+id/media_route_menu_item"
         android:title="@string/media_route_menu_title"
         app:actionProviderClass="androidx.mediarouter.app.MediaRouteActionProvider"

@@ -1,0 +1,21 @@
+# Build artifacts
+build/
+cmake-build-*/
+
+# Editor/IDE
+.cache/
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Compiled objects
+*.o
+*.a
+*.so
+*.so.*
+*.dylib
+
+# Generated files
+compile_commands.json

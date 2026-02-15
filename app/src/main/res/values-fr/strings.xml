@@ -360,4 +360,13 @@
     <string name="undraw_page">unDraw</string>
     <string name="undraw_thanks">Un grand merci à unDraw, nous n\'aurions pas pu rendre cette application aussi belle sans leurs illustrations.</string>
     <string name="undraw_url">https://undraw.co/</string>
+
+    <string name="airplay_dialog_title">Sélectionner un appareil AirPlay</string>
+    <string name="airplay_dialog_volume">Volume</string>
+    <string name="airplay_status_connecting">Connexion…</string>
+    <string name="airplay_status_connected">Connecté</string>
+    <string name="airplay_status_playing">Lecture</string>
+    <string name="airplay_status_paused">En pause</string>
+    <string name="airplay_status_buffering">Mise en mémoire tampon…</string>
+    <string name="airplay_status_stopped">Arrêté</string>
 </resources>

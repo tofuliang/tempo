@@ -395,4 +395,13 @@
     <string name="undraw_page">Развернуть</string>
     <string name="undraw_thanks">Особая благодарность — команде unDraw, без иллюстраций которой мы не смогли бы сделать это приложение красивее.</string>
     <string name="undraw_url">https://undraw.co/</string>
+
+    <string name="airplay_dialog_title">Выбрать устройство AirPlay</string>
+    <string name="airplay_dialog_volume">Громкость</string>
+    <string name="airplay_status_connecting">Подключение…</string>
+    <string name="airplay_status_connected">Подключено</string>
+    <string name="airplay_status_playing">Воспроизведение</string>
+    <string name="airplay_status_paused">Пауза</string>
+    <string name="airplay_status_buffering">Буферизация…</string>
+    <string name="airplay_status_stopped">Остановлено</string>
 </resources>

@@ -363,4 +363,13 @@
     <string name="undraw_page">unDraw</string>
     <string name="undraw_thanks">이 앱을 일러스트로 더 다채롭게 꾸밀 수 있도록 해준 unDraw 에 특별히 감사드립니다.</string>
     <string name="undraw_url">https://undraw.co/</string>
+
+    <string name="airplay_dialog_title">AirPlay 기기 선택</string>
+    <string name="airplay_dialog_volume">볼륨</string>
+    <string name="airplay_status_connecting">연결 중…</string>
+    <string name="airplay_status_connected">연결됨</string>
+    <string name="airplay_status_playing">재생 중</string>
+    <string name="airplay_status_paused">일시정지</string>
+    <string name="airplay_status_buffering">버퍼링…</string>
+    <string name="airplay_status_stopped">중지됨</string>
 </resources>
